@@ -5,7 +5,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-int adventurer(int player, struct gameState *state) {
+int _adventurer(int player, struct gameState *state) {
   int drawntreasure=0;
   int cardDrawn;
   int temphand[MAX_HAND];
@@ -39,7 +39,7 @@ int adventurer(int player, struct gameState *state) {
   return 0;
 }
 
-int smithy(int player, struct gameState *state, int pos) {
+int _smithy(int player, struct gameState *state, int pos) {
   int i;
   
   //+3 cards
@@ -53,7 +53,7 @@ int smithy(int player, struct gameState *state, int pos) {
   return 0;
 }
 
-int mine(int player, struct gameState *state, int pos, int c1, int c2) {
+int _mine(int player, struct gameState *state, int pos, int c1, int c2) {
   int i;
   int j;
 
@@ -92,7 +92,7 @@ int mine(int player, struct gameState *state, int pos, int c1, int c2) {
   return 0;
 }
 
-int salvager(int player, struct gameState *state, int pos, int c1) {
+int _salvager(int player, struct gameState *state, int pos, int c1) {
 
   //+1 buy
   state->numBuys++;
@@ -112,7 +112,7 @@ int salvager(int player, struct gameState *state, int pos, int c1) {
   return 0;
 }
 
-int sea_hag(int player, struct gameState *state) {
+int _sea_hag(int player, struct gameState *state) {
   int i;
 
   for (i = 0; i < state->numPlayers; i++){
@@ -786,7 +786,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
   switch( card ) 
     {
     case adventurer:
-      return adventurer(currentPlayer, state);
+      return _adventurer(currentPlayer, state);
 			
     case council_room:
       //+4 Cards
@@ -869,7 +869,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return -1;
 			
     case mine:
-      return mine(currentPlayer, state, handPos, choice1, choice2);
+      return _mine(currentPlayer, state, handPos, choice1, choice2);
 			
     case remodel:
       j = state->hand[currentPlayer][choice1];  //store card we will trash
@@ -898,7 +898,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return 0;
 		
     case smithy:
-      return smithy(currentPlayer, state, handPos);
+      return _smithy(currentPlayer, state, handPos);
 		
     case village:
       //+1 Card
@@ -1225,10 +1225,10 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return 0;
 		
     case salvager:
-      return salvager(currentPlayer,  state, handPos, choice1);
+      return _salvager(currentPlayer,  state, handPos, choice1);
 		
     case sea_hag:
-      return sea_hag(currentPlayer, state);
+      return _sea_hag(currentPlayer, state);
 		
     case treasure_map:
       //search hand for another treasure_map
