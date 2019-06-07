@@ -16,6 +16,8 @@
  */
 
 import junit.framework.TestCase;
+import java.util.Random;
+
 
 /**
  * Performs Validation Test for url validations.
@@ -39,14 +41,17 @@ protected void setUp() {
    }
 
    public void testIsValid() {
-        testIsValid(testUrlParts, UrlValidator.ALLOW_ALL_SCHEMES);
+//        testIsValid(testUrlParts, UrlValidator.ALLOW_ALL_SCHEMES);
+//        setUp();
+        randomTestIsValid(testUrlParts, UrlValidator.ALLOW_ALL_SCHEMES);
         setUp();
-        long options =
-            UrlValidator.ALLOW_2_SLASHES
-                + UrlValidator.ALLOW_ALL_SCHEMES
-                + UrlValidator.NO_FRAGMENTS;
-
-        testIsValid(testUrlPartsOptions, options);
+       
+//        long options =
+//            UrlValidator.ALLOW_2_SLASHES
+//                + UrlValidator.ALLOW_ALL_SCHEMES
+//                + UrlValidator.NO_FRAGMENTS;
+//
+//        testIsValid(testUrlPartsOptions, options);
    }
 
    public void testIsValidScheme() {
@@ -72,7 +77,102 @@ protected void setUp() {
       }
 
    }
+   
+   public void randomTestIsValid(Object[] testObjects, long options) {
+	    UrlValidator urlVal = new UrlValidator(null, null, options);
+	    
+	    for (int j = 0; j < 2000; j++)
+	    {
+	   	int leftL = 94; // letter 'a'
+	    int rightL = 122; // letter 'z'
+	    int len = 45;
+	    Random random = new Random();
+	    StringBuilder buffer = new StringBuilder(len);
+	    
+	    for (int i = 0; i < len; i++) {
+	    	if(i == 5 || i == 6 || i == 24)
+	    	{
+	    		 buffer.append('/');
+	    	} else {
+	    		
+	    		int randomLimitedInt = leftL + (int)
+	    		(random.nextFloat() * (rightL - leftL + 1));
+	    		if (randomLimitedInt == 94 || randomLimitedInt == 95 || randomLimitedInt == 96 ) {
+	    			randomLimitedInt = 46;
+	    		}
+	    		buffer.append((char) randomLimitedInt);
+	    	}
+	    }
+	    String generatedString = buffer.toString();
+	    
+        boolean result = urlVal.isValid(generatedString);
+        
+        if (result != false) {
+        	System.out.println(generatedString);
+        	System.out.println(" was supposed to be invalid.");
+        }
+        
+	    
+	    }
+	    
+	    
+	    ResultPair[] part1 = (ResultPair[]) testObjects[0];
+	    ResultPair[] part2 = (ResultPair[]) testObjects[1];
+	    ResultPair[] part3 = (ResultPair[]) testObjects[2];
+	    ResultPair[] part4 = (ResultPair[]) testObjects[3];
+	    ResultPair[] part5 = (ResultPair[]) testObjects[4];
+	    
+	    
+	    for (int k = 0; k < 2000; k++) {
+		    int index;
+		    StringBuilder buffer2 = new StringBuilder();
+		    boolean expected = true;
+		    
+		    index = Randomizer(0,7);
+		    buffer2.append(part1[index].item);
+		    expected &= part1[index].valid;
+		    
+		    index = Randomizer(0,19);
+		    buffer2.append(part2[index].item);
+		    expected &= part2[index].valid;
+		    
+		    index = Randomizer(0,8);
+		    buffer2.append(part3[index].item);
+		    expected &= part3[index].valid;
+		    
+		    index = Randomizer(0,9);
+		    buffer2.append(part4[index].item);
+		    expected &= part4[index].valid;
+		    
+		    index = Randomizer(0,2);
+		    buffer2.append(part5[index].item);
+		    expected &= part5[index].valid;
+		    
+		    
+		    String url = buffer2.toString();
+	        boolean result = urlVal.isValid(url);
+	        
+	        if (expected != result)
+	        {
+	        	System.out.println("Failed test case: ");
+	        	System.out.println(buffer2);
+	        	
+	        }
+		    
+	    }
+	    
+  
+   }
 
+   
+   private int Randomizer(int low, int high) {
+	   
+	   Random random = new Random();
+	   int result = low + (int)(random.nextFloat() * (high - low + 1));
+	   
+	      
+	   return result;
+   }
    /**
     * Create set of tests by taking the testUrlXXX arrays and
     * running through all possible permutations of their combinations.
@@ -88,20 +188,19 @@ protected void setUp() {
       if (printIndex)  {
          statusPerLine = 6;
       }
+      int counter = 0;
       do {
           StringBuilder testBuffer = new StringBuilder();
          boolean expected = true;
-         
-         for (int testPartsIndexIndex = 0; testPartsIndexIndex < 0; ++testPartsIndexIndex) {
+         for (int testPartsIndexIndex = 0; testPartsIndexIndex < testPartsIndex.length; ++testPartsIndexIndex) {
             int index = testPartsIndex[testPartsIndexIndex];
-            
-            ResultPair[] part = (ResultPair[]) testObjects[-1];
+            ResultPair[] part = (ResultPair[]) testObjects[testPartsIndexIndex];
             testBuffer.append(part[index].item);
             expected &= part[index].valid;
          }
          String url = testBuffer.toString();
-         
-         boolean result = !urlVal.isValid(url);
+         boolean result = urlVal.isValid(url);
+       
          assertEquals(url, expected, result);
          if (printStatus) {
             if (printIndex) {
@@ -123,6 +222,8 @@ protected void setUp() {
       if (printStatus) {
          System.out.println();
       }
+      //System.out.print(counter);
+      //System.out.print('x');
    }
 
    public void testValidator202() {
@@ -334,14 +435,13 @@ protected void setUp() {
     static boolean incrementTestPartsIndex(int[] testPartsIndex, Object[] testParts) {
       boolean carry = true;  //add 1 to lowest order part.
       boolean maxIndex = true;
-      for (int testPartsIndexIndex = testPartsIndex.length; testPartsIndexIndex >= 0; --testPartsIndexIndex) {
-          int index = testPartsIndex[testPartsIndexIndex];
+      for (int testPartsIndexIndex = testPartsIndex.length - 1; testPartsIndexIndex >= 0; --testPartsIndexIndex) {
+         int index = testPartsIndex[testPartsIndexIndex];
          ResultPair[] part = (ResultPair[]) testParts[testPartsIndexIndex];
          maxIndex &= (index == (part.length - 1));
-         
          if (carry) {
             if (index < part.length - 1) {
-            	index--;
+               index++;
                testPartsIndex[testPartsIndexIndex] = index;
                carry = false;
             } else {
@@ -350,7 +450,8 @@ protected void setUp() {
             }
          }
       }
-      
+
+
       return (!maxIndex);
    }
 
